@@ -20,24 +20,20 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authApi } from "@/lib/api";
-import { useAuthStore } from "@/lib/store";
 import { useToastStore } from "@/lib/store";
-import { Checkbox } from "@/components/ui";
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(1, "Contraseña requerida"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setAuth } = useAuthStore();
   const { addToast } = useToastStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [rememberMe, setRememberMe] = useState(false);
 
   const {
     register,
@@ -55,35 +51,17 @@ export default function LoginPage() {
       const response = await authApi.login(data);
 
       if (response.success) {
-        if (response.data?.user && response.data?.token) {
-          setAuth(response.data.user, response.data.token);
-          addToast({
-            type: "success",
-            title: "Welcome back!",
-            message: "You have been logged in successfully.",
-          });
-          router.push("/");
-        } else {
-          // If success but no token, OTP was likely sent
-          addToast({
-            type: "success",
-            title: "OTP Sent",
-            message:
-              response.message ||
-              "Please check your email for the verification code.",
-          });
-          router.push(
-            `/register/verify?email=${encodeURIComponent(data.email)}`,
-          );
-        }
+        addToast({
+          type: "success",
+          title: "Código enviado",
+          message: response.message || "Revisa tu email para el código OTP",
+        });
+        router.push(`/register/verify?email=${encodeURIComponent(data.email)}`);
       } else {
-        setError(response.message || "Login failed");
+        setError(response.message || "Error en el login");
       }
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error
-          ? (err as any).response?.data?.message || err.message
-          : "An error occurred during login";
+    } catch (err: any) {
+      const errorMessage = err.message || "Ocurrió un error durante el login";
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -94,8 +72,8 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/50 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
-          <CardDescription>Sign in to your account to continue</CardDescription>
+          <CardTitle className="text-2xl">Bienvenido</CardTitle>
+          <CardDescription>Inicia sesión en tu cuenta</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
@@ -109,7 +87,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="tu@email.com"
                 {...register("email")}
               />
               {errors.email && (
@@ -119,7 +97,7 @@ export default function LoginPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Contraseña</Label>
               <Input
                 id="password"
                 type="password"
@@ -132,23 +110,23 @@ export default function LoginPage() {
                 </p>
               )}
             </div>
-            <div className="flex items-center">
-              <Checkbox
-                id="rememberMe"
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                label="Remember me for 30 days"
-              />
-            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
             </Button>
+            <div className="flex items-center justify-between w-full text-sm">
+              <Link
+                href="/resend-verification"
+                className="text-primary hover:underline"
+              >
+                ¿No verificaste tu email?
+              </Link>
+            </div>
             <p className="text-sm text-muted-foreground text-center">
-              Don&apos;t have an account?{" "}
+              ¿No tienes cuenta?{" "}
               <Link href="/register" className="text-primary hover:underline">
-                Sign up
+                Regístrate
               </Link>
             </p>
           </CardFooter>

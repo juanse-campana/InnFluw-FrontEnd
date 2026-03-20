@@ -2,38 +2,57 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { discountCodesApi } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle, Button, Badge, Spinner, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Input, Alert, AlertDescription } from "@/components/ui";
-import { Plus, Trash2 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  Button,
+  Badge,
+  Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui";
+import { Plus, Trash2, Pencil } from "lucide-react";
 import { useState } from "react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatCurrency } from "@/lib/utils";
 import { useToastStore } from "@/lib/store";
+import Link from "next/link";
+import type { DiscountCode } from "@/types";
 
-const typeColors = {
-  PERCENTAGE: "default",
-  FIXED: "secondary",
-} as const;
+const typeLabels: Record<string, string> = {
+  PERCENTAGE: "Porcentaje",
+  FIXED_AMOUNT: "Monto fijo",
+};
 
 export default function DiscountCodesPage() {
   const queryClient = useQueryClient();
   const { addToast } = useToastStore();
-  const [newCode, setNewCode] = useState("");
-  const [showForm, setShowForm] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<boolean | null>(null);
 
   const { data: codesData, isLoading } = useQuery({
     queryKey: ["discountCodes"],
-    queryFn: discountCodesApi.getAll,
+    queryFn: () => discountCodesApi.getAll({}),
   });
 
   const deleteMutation = useMutation({
     mutationFn: discountCodesApi.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["discountCodes"] });
-      addToast({ type: "success", title: "Discount code deleted" });
+      addToast({ type: "success", title: "Código eliminado" });
     },
     onError: () => {
-      addToast({ type: "error", title: "Failed to delete code" });
+      addToast({ type: "error", title: "Error al eliminar" });
     },
   });
+
+  const filteredCodes =
+    codesData?.data?.codes?.filter((code: DiscountCode) => {
+      if (activeFilter === null) return true;
+      return code.isActive === activeFilter;
+    }) || [];
 
   if (isLoading) {
     return (
@@ -47,84 +66,116 @@ export default function DiscountCodesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Discount Codes</h1>
-          <p className="text-muted-foreground">Create and manage discount codes</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Códigos de Descuento
+          </h1>
+          <p className="text-muted-foreground">
+            Crea y gestiona códigos de descuento
+          </p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Create Code
+        <Button asChild>
+          <Link href="/discount-codes/new">
+            <Plus className="mr-2 h-4 w-4" />
+            Crear Código
+          </Link>
         </Button>
       </div>
 
-      {showForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Create New Discount Code</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Use the API or Postman to create discount codes. Endpoint: POST /api/v1/discount-codes
-            </p>
-            <Button variant="outline" onClick={() => setShowForm(false)}>Close</Button>
-          </CardContent>
-        </Card>
-      )}
+      <div className="flex gap-2">
+        <Button
+          variant={activeFilter === null ? "default" : "outline"}
+          size="sm"
+          onClick={() => setActiveFilter(null)}
+        >
+          Todos
+        </Button>
+        <Button
+          variant={activeFilter === true ? "default" : "outline"}
+          size="sm"
+          onClick={() => setActiveFilter(true)}
+        >
+          Activos
+        </Button>
+        <Button
+          variant={activeFilter === false ? "default" : "outline"}
+          size="sm"
+          onClick={() => setActiveFilter(false)}
+        >
+          Inactivos
+        </Button>
+      </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>All Codes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {codesData?.data?.length > 0 ? (
+        <CardContent className="p-0">
+          {filteredCodes.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Value</TableHead>
-                  <TableHead>Uses</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Expires</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>Código</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead>Valor</TableHead>
+                  <TableHead>Usos</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Expira</TableHead>
+                  <TableHead>Fecha</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {codesData.data.map((code: any) => (
+                {filteredCodes.map((code: DiscountCode) => (
                   <TableRow key={code.id}>
-                    <TableCell className="font-medium">{code.code}</TableCell>
+                    <TableCell className="font-mono font-medium">
+                      {code.code}
+                    </TableCell>
                     <TableCell>
-                      <Badge variant={typeColors[code.type as keyof typeof typeColors] || "secondary"}>
-                        {code.type}
+                      <Badge variant="secondary">
+                        {typeLabels[code.type] || code.type}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {code.type === "PERCENTAGE" ? `${code.value}%` : `$${code.value}`}
+                      {code.type === "PERCENTAGE"
+                        ? `${code.value}%`
+                        : formatCurrency(code.value)}
                     </TableCell>
-                    <TableCell>{code.usedCount}/{code.maxUses || "∞"}</TableCell>
                     <TableCell>
-                      <Badge variant={code.isActive ? "success" : "destructive"}>
-                        {code.isActive ? "Active" : "Inactive"}
+                      {code.uses}/{code.maxUses || "∞"}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={code.isActive ? "success" : "destructive"}
+                      >
+                        {code.isActive ? "Activo" : "Inactivo"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {code.expiresAt ? formatDate(code.expiresAt) : "Never"}
+                      {code.expiresAt ? formatDate(code.expiresAt) : "Nunca"}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {formatDate(code.createdAt)}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          if (confirm("Delete this code?")) {
-                            deleteMutation.mutate(code.id);
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="icon" asChild>
+                          <Link href={`/discount-codes/${code.id}`}>
+                            <Pencil className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            if (
+                              confirm(
+                                "¿Estás seguro de que deseas eliminar este código?",
+                              )
+                            ) {
+                              deleteMutation.mutate(code.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -132,7 +183,12 @@ export default function DiscountCodesPage() {
             </Table>
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">No discount codes yet</p>
+              <p className="text-muted-foreground mb-4">
+                No hay códigos de descuento
+              </p>
+              <Button asChild>
+                <Link href="/discount-codes/new">Crear primer código</Link>
+              </Button>
             </div>
           )}
         </CardContent>

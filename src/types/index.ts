@@ -2,7 +2,9 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  isVerified: boolean;
+  avatar?: string;
+  role: "INFLUENCER" | "ADMIN";
+  emailVerified: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -11,7 +13,7 @@ export interface AuthResponse {
   success: boolean;
   message: string;
   data?: {
-    user?: User;
+    user?: Partial<User>;
     token?: string;
   };
 }
@@ -24,72 +26,97 @@ export interface Drop {
   category: string;
   price: number;
   stock: number;
-  status: "DRAFT" | "LIVE" | "PAUSED" | "SOLD_OUT";
+  productImage?: string;
+  isActive: boolean;
+  status: "DRAFT" | "COMING_SOON" | "LIVE" | "SOLD_OUT" | "ENDED";
   config?: DropConfig;
-  views: number;
-  visitors: number;
-  orders: number;
-  revenue: number;
-  userId: string;
   createdAt: string;
   updatedAt: string;
+  userId: string;
+  user?: { id: string; name: string; avatar?: string };
+  discountCodes?: DiscountCode[];
+  _count?: { orders: number; visitors: number };
 }
 
 export interface DropConfig {
   theme?: {
-    colors?: {
-      primary?: string;
-      secondary?: string;
-      background?: string;
-      text?: string;
-    };
+    colors?: Record<string, string>;
+    fonts?: Record<string, string>;
+  };
+  branding?: {
+    logo?: string;
+    favicon?: string;
+    heroImage?: string;
+    ogImage?: string;
   };
   content?: {
     headline?: string;
     subheadline?: string;
+    description?: string;
     ctaText?: string;
-    successMessage?: string;
+    footerText?: string;
   };
-  settings?: {
-    maxOrdersPerCustomer?: number;
-    requireEmailVerification?: boolean;
-    showStockCount?: boolean;
+  layout?: {
+    template?: string;
+    boxedWidth?: number;
+    padding?: number;
+  };
+  products?: {
+    showStock?: boolean;
+    showPrices?: boolean;
+    currency?: string;
+  };
+  checkout?: {
+    successRedirect?: string;
+    emailCustomMessage?: string;
+  };
+  social?: {
+    instagram?: string;
+    twitter?: string;
+    tiktok?: string;
+  };
+  customCss?: string;
+  meta?: {
+    title?: string;
+    description?: string;
   };
 }
 
 export interface DiscountCode {
   id: string;
   code: string;
-  type: "PERCENTAGE" | "FIXED";
+  type: "PERCENTAGE" | "FIXED_AMOUNT";
   value: number;
   minAmount?: number;
   maxUses?: number;
-  usedCount: number;
+  uses: number;
   expiresAt?: string;
   isActive: boolean;
   dropIds: string[];
+  drops?: Array<{ drop: { id: string; title: string; slug: string } }>;
+  _count?: { orders: number };
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Order {
   id: string;
-  dropId: string;
-  drop?: Drop;
   buyerEmail: string;
   buyerName: string;
   buyerPhone?: string;
   buyerAddress?: string;
   buyerCity?: string;
   buyerCountry?: string;
-  quantity: number;
   subtotal: number;
   discount: number;
   total: number;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED" | "REFUNDED";
+  status: "PENDING" | "CONFIRMED" | "REFUNDED";
   confirmationToken?: string;
-  createdAt: string;
   confirmedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  drop: { id: string; title: string; slug: string };
+  discountCode?: { id: string; code: string };
 }
 
 export interface CheckoutSimulation {
@@ -103,15 +130,45 @@ export interface CheckoutSimulation {
   buyerCountry?: string;
 }
 
-export interface Analytics {
-  totalDrops: number;
-  liveDrops: number;
-  totalOrders: number;
-  totalRevenue: number;
-  totalVisitors: number;
-  conversionRate: number;
+export interface OrderResponse {
+  id: string;
+  status: "PENDING" | "CONFIRMED" | "REFUNDED";
+  total: number;
+  confirmationUrl?: string;
+  confirmedAt?: string;
+}
+
+export interface DashboardAnalytics {
+  period: { start: string; end: string };
+  summary: {
+    totalDrops: number;
+    activeDrops: number;
+    totalVisitors: number;
+    totalOrders: number;
+    totalRevenue: number;
+  };
   recentOrders: Order[];
-  topDrops: Drop[];
+}
+
+export interface DropAnalytics {
+  dropId: string;
+  period: string;
+  summary: {
+    visitors: number;
+    orders: number;
+    revenue: number;
+    totalDiscount: number;
+    conversionRate: number;
+  };
+  topCodes: Array<{
+    code: string;
+    uses: number;
+    discount: number;
+  }>;
+  dailyStats: {
+    visitors: Array<{ date: string; count: number }>;
+    orders: Array<{ date: string; count: number }>;
+  };
 }
 
 export interface Webhook {
@@ -123,32 +180,94 @@ export interface Webhook {
   updatedAt: string;
 }
 
-export interface WebhookLog {
+export interface WebhookDelivery {
   id: string;
+  status: string;
+  statusCode?: number;
+  response?: string;
+  error?: string;
   webhookId: string;
-  event: string;
-  payload: Record<string, unknown>;
-  responseStatus?: number;
-  responseBody?: string;
-  success: boolean;
+  dropId?: string;
+  orderId?: string;
+  createdAt: string;
+}
+
+export interface Visitor {
+  id: string;
+  sessionId?: string;
+  ip?: string;
+  userAgent?: string;
   createdAt: string;
 }
 
 export interface ApiResponse<T> {
   success: boolean;
-  message: string;
+  message?: string;
   data?: T;
+  error?: ApiError;
   errors?: Record<string, string[]>;
+}
+
+export interface ApiError {
+  code: string;
+  message: string;
+  errors?: Array<{ path: string[]; message: string }>;
 }
 
 export interface PaginatedResponse<T> {
   success: boolean;
-  message: string;
+  message?: string;
   data: T[];
   pagination: {
     page: number;
     limit: number;
     total: number;
-    totalPages: number;
+    pages: number;
   };
 }
+
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface DropsFilters extends PaginationParams {
+  status?: string;
+  category?: string;
+}
+
+export interface OrdersFilters extends PaginationParams {
+  dropId?: string;
+  status?: string;
+}
+
+export interface DiscountCodeFilters {
+  isActive?: boolean;
+}
+
+export interface UploadResponse {
+  url: string;
+  filename: string;
+  originalName: string;
+  size: number;
+  mimetype: string;
+}
+
+export interface HealthResponse {
+  success: boolean;
+  data: {
+    status: string;
+    app: string;
+    version: string;
+    timestamp: string;
+    uptime: number;
+  };
+}
+
+export interface DiscountCodeValidation {
+  valid: boolean;
+  code?: DiscountCode;
+  reason?: string;
+}
+
+export type Period = "7d" | "30d" | "90d";

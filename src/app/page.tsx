@@ -39,12 +39,12 @@ export default function HomePage() {
             <span className="text-xl font-bold">InnFluw</span>
           </div>
           <nav className="flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost">Sign In</Button>
-            </Link>
-            <Link href="/register">
-              <Button>Get Started</Button>
-            </Link>
+            <Button variant="ghost" asChild>
+              <Link href="/login">Sign In</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/register">Get Started</Link>
+            </Button>
           </nav>
         </div>
       </header>
@@ -62,14 +62,12 @@ export default function HomePage() {
               orders, and track analytics - all in one place.
             </p>
             <div className="mt-10 flex items-center justify-center gap-4">
-              <Link href="/register">
-                <Button size="lg">Start Free Trial</Button>
-              </Link>
-              <Link href="/login">
-                <Button variant="outline" size="lg">
-                  View Demo
-                </Button>
-              </Link>
+              <Button size="lg" asChild>
+                <Link href="/register">Start Free Trial</Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/login">View Demo</Link>
+              </Button>
             </div>
           </div>
         </section>

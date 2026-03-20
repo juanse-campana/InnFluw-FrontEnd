@@ -24,13 +24,15 @@ import { useToastStore } from "@/lib/store";
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+    email: z.string().email("Email inválido"),
+    password: z
+      .string()
+      .min(6, "La contraseña debe tener al menos 6 caracteres"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: "Las contraseñas no coinciden",
     path: ["confirmPassword"],
   });
 
@@ -41,6 +43,7 @@ export default function RegisterPage() {
   const { addToast } = useToastStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
 
   const {
     register: registerForm,
@@ -62,32 +65,94 @@ export default function RegisterPage() {
       });
 
       if (response.success) {
+        setRegisteredEmail(data.email);
         addToast({
           type: "success",
-          title: "Account created!",
-          message: "Redirecting to verify your email...",
+          title: "Cuenta creada",
+          message: response.message || "Por favor verifica tu email",
         });
-        router.push(`/register/verify?email=${encodeURIComponent(data.email)}`);
       } else {
-        setError(response.message || "Registration failed");
+        setError(response.message || "Error en el registro");
       }
-    } catch (err: unknown) {
+    } catch (err: any) {
       const errorMessage =
-        err instanceof Error
-          ? (err as any).response?.data?.message || err.message
-          : "An error occurred during registration";
+        err.message || "Ocurrió un error durante el registro";
       setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (registeredEmail) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-muted/50 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+              <svg
+                className="h-8 w-8 text-green-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <CardTitle className="text-2xl">Cuenta creada</CardTitle>
+            <CardDescription>
+              Hemos enviado un email de verificación a{" "}
+              <strong>{registeredEmail}</strong>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Alert>
+              <AlertDescription>
+                Por favor revisa tu bandeja de entrada y haz clic en el link de
+                verificación para activar tu cuenta.
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+          <CardFooter className="flex flex-col gap-3">
+            <Button
+              onClick={() => router.push(`/verify-email`)}
+              className="w-full"
+            >
+              Ir a verificar email
+            </Button>
+            <p className="text-sm text-muted-foreground text-center">
+              ¿No recibiste el email?{" "}
+              <Link
+                href={`/resend-verification?email=${encodeURIComponent(
+                  registeredEmail,
+                )}`}
+                className="text-primary hover:underline"
+              >
+                Reenviar
+              </Link>
+            </p>
+            <p className="text-sm text-muted-foreground text-center">
+              ¿Ya verificaste tu email?{" "}
+              <Link href="/login" className="text-primary hover:underline">
+                Iniciar sesión
+              </Link>
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/50 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create an account</CardTitle>
-          <CardDescription>Enter your details to get started</CardDescription>
+          <CardTitle className="text-2xl">Crear cuenta</CardTitle>
+          <CardDescription>Ingresa tus datos para comenzar</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
@@ -97,11 +162,11 @@ export default function RegisterPage() {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">Nombre completo</Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="John Doe"
+                placeholder="Juan Pérez"
                 {...registerForm("name")}
               />
               {errors.name && (
@@ -115,7 +180,7 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="tu@email.com"
                 {...registerForm("email")}
               />
               {errors.email && (
@@ -125,7 +190,7 @@ export default function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Contraseña</Label>
               <Input
                 id="password"
                 type="password"
@@ -139,7 +204,7 @@ export default function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -155,12 +220,12 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Create account"}
+              {isLoading ? "Creando cuenta..." : "Crear cuenta"}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              Already have an account?{" "}
+              ¿Ya tienes cuenta?{" "}
               <Link href="/login" className="text-primary hover:underline">
-                Sign in
+                Iniciar sesión
               </Link>
             </p>
           </CardFooter>

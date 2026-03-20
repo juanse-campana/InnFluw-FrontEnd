@@ -26,3 +26,4 @@ export {
   TableCell,
   TableCaption,
 } from "./table";
+export { ImageUpload } from "./image-upload";

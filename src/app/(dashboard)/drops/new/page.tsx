@@ -2,7 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { Button, Input, Label, Textarea, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Select } from "@/components/ui";
+import {
+  Button,
+  Input,
+  Label,
+  Textarea,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Select,
+} from "@/components/ui";
 import { dropsApi } from "@/lib/api";
 import { useToastStore } from "@/lib/store";
 import { ArrowLeft, Save } from "lucide-react";
@@ -31,53 +43,64 @@ export default function NewDropPage() {
     status: "DRAFT",
     config: {
       theme: { colors: { primary: "#6366f1", secondary: "#8b5cf6" } },
-      content: { headline: "", subheadline: "", ctaText: "Buy Now" },
-      settings: { showStockCount: true },
+      content: {
+        headline: "",
+        subheadline: "",
+        ctaText: "Buy Now",
+        footerText: "",
+      },
+      products: { showStock: true, showPrices: true, currency: "USD" },
+      social: { instagram: "", twitter: "", tiktok: "" },
     },
   });
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: unknown) => {
     if (field.includes(".")) {
-      const [parent, child] = field.split(".");
-      if (child.includes(".")) {
-        const [grandparent, grandchild] = child.split(".");
-        setFormData((prev) => ({
-          ...prev,
-          [parent]: {
-            ...(prev as any)[parent],
-            [grandparent]: {
-              ...((prev as any)[parent]?.[grandparent] || {}),
-              [grandchild]: value,
-            },
-          },
-        }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          [parent]: {
-            ...(prev as any)[parent],
-            [child]: value,
-          },
-        }));
-      }
+      const parts = field.split(".");
+      setFormData((prev) => {
+        const newData = { ...prev };
+        let current: Record<string, unknown> = newData as Record<
+          string,
+          unknown
+        >;
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!current[parts[i]]) {
+            current[parts[i]] = {};
+          }
+          current = current[parts[i]] as Record<string, unknown>;
+        }
+        current[parts[parts.length - 1]] = value;
+        return newData;
+      });
     } else {
       setFormData((prev) => ({ ...prev, [field]: value }));
     }
   };
 
   const createMutation = useMutation({
-    mutationFn: () => dropsApi.create(formData as any),
+    mutationFn: () =>
+      dropsApi.create(
+        formData as unknown as Parameters<typeof dropsApi.create>[0],
+      ),
     onSuccess: () => {
       addToast({ type: "success", title: "Drop created successfully" });
       router.push("/drops");
     },
-    onError: (error: any) => {
-      addToast({ type: "error", title: "Failed to create drop", message: error.response?.data?.message });
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      addToast({
+        type: "error",
+        title: "Failed to create drop",
+        message: err.message,
+      });
     },
   });
 
   const generateSlug = (title: string) => {
-    return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
   };
 
   return (
@@ -99,7 +122,9 @@ export default function NewDropPage() {
           <Card>
             <CardHeader>
               <CardTitle>Basic Information</CardTitle>
-              <CardDescription>Enter the basic details of your product</CardDescription>
+              <CardDescription>
+                Enter the basic details of your product
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -124,7 +149,9 @@ export default function NewDropPage() {
                   <Input
                     id="slug"
                     value={formData.slug}
-                    onChange={(e) => handleChange("slug", generateSlug(e.target.value))}
+                    onChange={(e) =>
+                      handleChange("slug", generateSlug(e.target.value))
+                    }
                     placeholder="my-awesome-product"
                   />
                 </div>
@@ -144,17 +171,25 @@ export default function NewDropPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
-                  <Select value={formData.category} onChange={(e) => handleChange("category", e.target.value)}>
+                  <Select
+                    value={formData.category}
+                    onChange={(e) => handleChange("category", e.target.value)}
+                  >
                     <option value="">Select category</option>
                     {categories.map((cat) => (
-                      <option key={cat.value} value={cat.value}>{cat.label}</option>
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
                     ))}
                   </Select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="status">Status</Label>
-                  <Select value={formData.status} onChange={(e) => handleChange("status", e.target.value)}>
+                  <Select
+                    value={formData.status}
+                    onChange={(e) => handleChange("status", e.target.value)}
+                  >
                     <option value="DRAFT">Draft</option>
                     <option value="LIVE">Live</option>
                     <option value="PAUSED">Paused</option>
@@ -167,7 +202,9 @@ export default function NewDropPage() {
           <Card>
             <CardHeader>
               <CardTitle>Pricing & Inventory</CardTitle>
-              <CardDescription>Set your product price and stock</CardDescription>
+              <CardDescription>
+                Set your product price and stock
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
@@ -179,7 +216,9 @@ export default function NewDropPage() {
                     step="0.01"
                     min="0"
                     value={formData.price}
-                    onChange={(e) => handleChange("price", parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleChange("price", parseFloat(e.target.value) || 0)
+                    }
                   />
                 </div>
 
@@ -190,7 +229,9 @@ export default function NewDropPage() {
                     type="number"
                     min="0"
                     value={formData.stock}
-                    onChange={(e) => handleChange("stock", parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleChange("stock", parseInt(e.target.value) || 0)
+                    }
                   />
                 </div>
               </div>
@@ -200,7 +241,9 @@ export default function NewDropPage() {
           <Card>
             <CardHeader>
               <CardTitle>Content & Branding</CardTitle>
-              <CardDescription>Customize your landing page content</CardDescription>
+              <CardDescription>
+                Customize your landing page content
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -208,7 +251,9 @@ export default function NewDropPage() {
                 <Input
                   id="headline"
                   value={formData.config.content.headline}
-                  onChange={(e) => handleChange("config.content.headline", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("config.content.headline", e.target.value)
+                  }
                   placeholder="Your main headline"
                 />
               </div>
@@ -218,7 +263,9 @@ export default function NewDropPage() {
                 <Textarea
                   id="subheadline"
                   value={formData.config.content.subheadline}
-                  onChange={(e) => handleChange("config.content.subheadline", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("config.content.subheadline", e.target.value)
+                  }
                   placeholder="Supporting text"
                   rows={2}
                 />
@@ -229,7 +276,9 @@ export default function NewDropPage() {
                 <Input
                   id="ctaText"
                   value={formData.config.content.ctaText}
-                  onChange={(e) => handleChange("config.content.ctaText", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("config.content.ctaText", e.target.value)
+                  }
                   placeholder="Buy Now"
                 />
               </div>
@@ -242,7 +291,12 @@ export default function NewDropPage() {
                     type="color"
                     className="h-10"
                     value={formData.config.theme.colors.primary}
-                    onChange={(e) => handleChange("config.theme.colors.primary", e.target.value)}
+                    onChange={(e) =>
+                      handleChange(
+                        "config.theme.colors.primary",
+                        e.target.value,
+                      )
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -252,7 +306,12 @@ export default function NewDropPage() {
                     type="color"
                     className="h-10"
                     value={formData.config.theme.colors.secondary}
-                    onChange={(e) => handleChange("config.theme.colors.secondary", e.target.value)}
+                    onChange={(e) =>
+                      handleChange(
+                        "config.theme.colors.secondary",
+                        e.target.value,
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -267,9 +326,16 @@ export default function NewDropPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg border p-4">
-                <p className="font-medium">{formData.title || "Product Title"}</p>
-                <p className="text-sm text-muted-foreground">/drops/{formData.slug || "slug"}</p>
-                <Badge variant={formData.status === "LIVE" ? "success" : "secondary"} className="mt-2">
+                <p className="font-medium">
+                  {formData.title || "Product Title"}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  /drops/{formData.slug || "slug"}
+                </p>
+                <Badge
+                  variant={formData.status === "LIVE" ? "success" : "secondary"}
+                  className="mt-2"
+                >
                   {formData.status}
                 </Badge>
               </div>
@@ -281,7 +347,12 @@ export default function NewDropPage() {
               <CardTitle>Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button type="submit" className="w-full" disabled={createMutation.isPending} onClick={() => createMutation.mutate()}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={createMutation.isPending}
+                onClick={() => createMutation.mutate()}
+              >
                 <Save className="mr-2 h-4 w-4" />
                 {createMutation.isPending ? "Creating..." : "Create Drop"}
               </Button>
