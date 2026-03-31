@@ -26,7 +26,7 @@ import type { Order, Drop } from "@/types";
 export default function DashboardPage() {
   const { data: analytics, isLoading } = useQuery({
     queryKey: ["analytics"],
-    queryFn: analyticsApi.getDashboard,
+    queryFn: () => analyticsApi.getDashboard(),
   });
 
   if (isLoading) {
@@ -40,32 +40,32 @@ export default function DashboardPage() {
   const stats = [
     {
       title: "Total Drops",
-      value: analytics?.data?.totalDrops || 0,
-      subtext: `${analytics?.data?.liveDrops || 0} live`,
+      value: analytics?.data?.summary?.totalDrops || 0,
+      subtext: `${analytics?.data?.summary?.activeDrops || 0} live`,
       icon: Package,
       trend: null as "up" | "down" | null,
     },
     {
       title: "Total Orders",
-      value: analytics?.data?.totalOrders || 0,
+      value: analytics?.data?.summary?.totalOrders || 0,
       subtext: "All time",
       icon: ShoppingCart,
       trend: null as "up" | "down" | null,
     },
     {
       title: "Revenue",
-      value: formatCurrency(analytics?.data?.totalRevenue || 0),
+      value: formatCurrency(analytics?.data?.summary?.totalRevenue || 0),
       subtext: "All time",
       icon: DollarSign,
       trend: null as "up" | "down" | null,
     },
     {
       title: "Visitors",
-      value: analytics?.data?.totalVisitors || 0,
-      subtext: `${((analytics?.data?.conversionRate || 0) * 100).toFixed(1)}% conversion`,
+      value: analytics?.data?.summary?.totalVisitors || 0,
+      subtext: `${((analytics?.data?.summary?.conversionRate || 0) * 100).toFixed(1)}% conversion`,
       icon: Users,
       trend:
-        (analytics?.data?.conversionRate || 0) > 0
+        (analytics?.data?.summary?.conversionRate || 0) > 0
           ? ("up" as const)
           : ("down" as const),
     },
@@ -171,7 +171,7 @@ export default function DashboardPage() {
           <CardContent>
             {analytics?.data?.topDrops && analytics.data.topDrops.length > 0 ? (
               <div className="space-y-4">
-                {analytics.data.topDrops.slice(0, 5).map((drop: Drop) => (
+                {analytics.data.topDrops.slice(0, 5).map((drop) => (
                   <div
                     key={drop.id}
                     className="flex items-center justify-between"
@@ -186,13 +186,6 @@ export default function DashboardPage() {
                       <p className="font-medium">
                         {formatCurrency(drop.revenue)}
                       </p>
-                      <Badge
-                        variant={
-                          drop.status === "LIVE" ? "success" : "secondary"
-                        }
-                      >
-                        {drop.status}
-                      </Badge>
                     </div>
                   </div>
                 ))}
@@ -216,7 +209,10 @@ export default function DashboardPage() {
               <div>
                 <p className="font-medium">Conversion Rate</p>
                 <p className="text-2xl font-bold">
-                  {((analytics?.data?.conversionRate || 0) * 100).toFixed(1)}%
+                  {(
+                    (analytics?.data?.summary?.conversionRate || 0) * 100
+                  ).toFixed(1)}
+                  %
                 </p>
               </div>
             </div>

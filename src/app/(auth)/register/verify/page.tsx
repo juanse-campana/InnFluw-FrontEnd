@@ -1,5 +1,6 @@
 "use client";
 
+import { User } from "@/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -74,7 +75,7 @@ function VerifyContent() {
       const response = await authApi.verifyOtp(data);
 
       if (response.success && response.data?.user && response.data?.token) {
-        setAuth(response.data.user, response.data.token);
+        setAuth(response.data.user as User, response.data.token);
         addToast({
           type: "success",
           title: "Email verified!",

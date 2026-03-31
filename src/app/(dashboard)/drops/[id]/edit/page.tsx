@@ -96,16 +96,26 @@ export default function EditDropPage() {
         stock: d.stock,
         status: d.status,
         productImage: d.productImage || "",
-        config: d.config || {
-          theme: { colors: { primary: "#6366f1" } },
-          content: {
-            headline: "",
-            subheadline: "",
-            ctaText: "Comprar ahora",
-            footerText: "",
+        config: {
+          theme: {
+            colors: { primary: d.config?.theme?.colors?.primary || "#6366f1" },
           },
-          products: { showStock: true, showPrices: true, currency: "USD" },
-          social: { instagram: "", twitter: "", tiktok: "" },
+          content: {
+            headline: d.config?.content?.headline || "",
+            subheadline: d.config?.content?.subheadline || "",
+            ctaText: d.config?.content?.ctaText || "Comprar ahora",
+            footerText: d.config?.content?.footerText || "",
+          },
+          products: {
+            showStock: d.config?.products?.showStock ?? true,
+            showPrices: d.config?.products?.showPrices ?? true,
+            currency: d.config?.products?.currency || "USD",
+          },
+          social: {
+            instagram: d.config?.social?.instagram || "",
+            twitter: d.config?.social?.twitter || "",
+            tiktok: d.config?.social?.tiktok || "",
+          },
         },
       });
     }

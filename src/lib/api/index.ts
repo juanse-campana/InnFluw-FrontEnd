@@ -91,7 +91,7 @@ export const authApi = {
       const response = await api.post("/auth/register", data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -104,7 +104,7 @@ export const authApi = {
       });
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -115,7 +115,7 @@ export const authApi = {
       const response = await api.post("/auth/resend-verification", { email });
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -127,7 +127,7 @@ export const authApi = {
       const response = await api.post("/auth/login", data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -139,7 +139,7 @@ export const authApi = {
       const response = await api.post("/auth/verify-otp", data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -148,7 +148,7 @@ export const authApi = {
       const response = await api.get("/auth/profile");
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -160,7 +160,7 @@ export const authApi = {
       const response = await api.patch("/auth/profile", data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -178,7 +178,7 @@ export const dropsApi = {
       const response = await api.get("/drops", { params });
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -187,7 +187,7 @@ export const dropsApi = {
       const response = await api.get(`/drops/${id}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -196,7 +196,7 @@ export const dropsApi = {
       const response = await api.get(`/drops/slug/${slug}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -205,7 +205,7 @@ export const dropsApi = {
       const response = await api.post("/drops", data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -217,7 +217,7 @@ export const dropsApi = {
       const response = await api.patch(`/drops/${id}`, data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -226,7 +226,7 @@ export const dropsApi = {
       const response = await api.delete(`/drops/${id}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -238,7 +238,7 @@ export const dropsApi = {
       const response = await api.post("/drops/track-visitor", data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -251,7 +251,7 @@ export const discountCodesApi = {
       const response = await api.get("/discount-codes", { params });
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -260,7 +260,7 @@ export const discountCodesApi = {
       const response = await api.get(`/discount-codes/${id}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -275,7 +275,7 @@ export const discountCodesApi = {
       });
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -286,7 +286,7 @@ export const discountCodesApi = {
       const response = await api.post("/discount-codes", data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -298,7 +298,7 @@ export const discountCodesApi = {
       const response = await api.patch(`/discount-codes/${id}`, data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -307,7 +307,7 @@ export const discountCodesApi = {
       const response = await api.delete(`/discount-codes/${id}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -320,7 +320,7 @@ export const checkoutApi = {
       const response = await api.post("/checkout/simulate", data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -331,7 +331,7 @@ export const checkoutApi = {
       const response = await api.post(`/checkout/confirm/${token}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -347,7 +347,7 @@ export const checkoutApi = {
       const response = await api.get("/checkout/orders", { params });
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -356,7 +356,7 @@ export const checkoutApi = {
       const response = await api.get(`/checkout/orders/${id}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -371,7 +371,7 @@ export const analyticsApi = {
       });
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -385,7 +385,7 @@ export const analyticsApi = {
       });
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -396,7 +396,7 @@ export const webhooksApi = {
       const response = await api.get("/webhooks");
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -408,7 +408,7 @@ export const webhooksApi = {
       const response = await api.post("/webhooks", data);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -417,7 +417,7 @@ export const webhooksApi = {
       const response = await api.delete(`/webhooks/${id}`);
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 
@@ -431,7 +431,7 @@ export const webhooksApi = {
       });
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -469,7 +469,7 @@ export const uploadApi = {
       });
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };
@@ -480,7 +480,7 @@ export const healthApi = {
       const response = await api.get("/health");
       return response.data;
     } catch (error) {
-      handleApiError(error);
+      return handleApiError(error);
     }
   },
 };

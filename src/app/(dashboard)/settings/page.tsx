@@ -2,7 +2,19 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Input, Label, Spinner, Alert, AlertDescription } from "@/components/ui";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Button,
+  Input,
+  Label,
+  Spinner,
+  Alert,
+  AlertDescription,
+} from "@/components/ui";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
 import { useToastStore } from "@/lib/store";
@@ -64,7 +76,9 @@ export default function SettingsPage() {
                   {...register("name", { required: "Name is required" })}
                 />
                 {errors.name && (
-                  <p className="text-sm text-destructive">{errors.name.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.name.message}
+                  </p>
                 )}
               </div>
 
@@ -79,8 +93,12 @@ export default function SettingsPage() {
               <div className="space-y-2">
                 <Label>Status</Label>
                 <div className="flex items-center gap-2">
-                  <span className={`h-2 w-2 rounded-full ${user?.isVerified ? "bg-green-500" : "bg-yellow-500"}`} />
-                  <span className="text-sm">{user?.isVerified ? "Verified" : "Pending verification"}</span>
+                  <span
+                    className={`h-2 w-2 rounded-full ${user?.emailVerified ? "bg-green-500" : "bg-yellow-500"}`}
+                  />
+                  <span className="text-sm">
+                    {user?.emailVerified ? "Verified" : "Pending verification"}
+                  </span>
                 </div>
               </div>
 
@@ -88,10 +106,15 @@ export default function SettingsPage() {
                 {isEditing ? (
                   <>
                     <Button type="submit" disabled={updateMutation.isPending}>
-                      {updateMutation.isPending ? <Spinner className="h-4 w-4 mr-2" /> : null}
+                      {updateMutation.isPending ? (
+                        <Spinner className="h-4 w-4 mr-2" />
+                      ) : null}
                       Save Changes
                     </Button>
-                    <Button variant="outline" onClick={() => setIsEditing(false)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsEditing(false)}
+                    >
                       Cancel
                     </Button>
                   </>
@@ -113,11 +136,17 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div>
               <p className="text-sm text-muted-foreground">Member since</p>
-              <p className="font-medium">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}</p>
+              <p className="font-medium">
+                {user?.createdAt
+                  ? new Date(user.createdAt).toLocaleDateString()
+                  : "N/A"}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Account ID</p>
-              <p className="font-medium font-mono text-sm">{user?.id || "N/A"}</p>
+              <p className="font-medium font-mono text-sm">
+                {user?.id || "N/A"}
+              </p>
             </div>
           </CardContent>
         </Card>

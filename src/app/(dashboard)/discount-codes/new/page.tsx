@@ -29,7 +29,7 @@ const createCodeSchema = z.object({
   minAmount: z.number().optional(),
   maxUses: z.number().optional(),
   expiresAt: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
   dropIds: z.array(z.string()).min(1, "Selecciona al menos un drop"),
 });
 

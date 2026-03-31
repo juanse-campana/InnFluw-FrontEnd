@@ -146,7 +146,14 @@ export interface DashboardAnalytics {
     totalVisitors: number;
     totalOrders: number;
     totalRevenue: number;
+    conversionRate: number;
   };
+  topDrops: Array<{
+    id: string;
+    title: string;
+    orders: number;
+    revenue: number;
+  }>;
   recentOrders: Order[];
 }
 

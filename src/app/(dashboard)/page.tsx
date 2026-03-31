@@ -19,6 +19,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Eye,
+  Package,
 } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
@@ -146,9 +147,9 @@ export default function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {analytics?.data?.recentOrders?.length > 0 ? (
+            {(analytics?.data?.recentOrders?.length ?? 0) > 0 ? (
               <div className="space-y-4">
-                {analytics.data.recentOrders.slice(0, 5).map((order) => (
+                {analytics?.data?.recentOrders?.slice(0, 5).map((order) => (
                   <div
                     key={order.id}
                     className="flex items-center justify-between"
