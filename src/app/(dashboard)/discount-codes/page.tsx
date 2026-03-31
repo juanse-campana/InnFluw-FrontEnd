@@ -156,7 +156,7 @@ export default function DiscountCodesPage() {
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Button variant="ghost" size="icon" asChild>
-                          <Link href={`/discount-codes/${code.id}`}>
+                          <Link href={`/discount-codes/${code.id}/edit`}>
                             <Pencil className="h-4 w-4" />
                           </Link>
                         </Button>

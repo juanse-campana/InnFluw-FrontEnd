@@ -38,6 +38,12 @@ export interface Drop {
   _count?: { orders: number; visitors: number };
 }
 
+export interface CartItem {
+  drop: Drop;
+  quantity: number;
+  addedAt: string;
+}
+
 export interface DropConfig {
   theme?: {
     colors?: Record<string, string>;
@@ -93,7 +99,11 @@ export interface DiscountCode {
   expiresAt?: string;
   isActive: boolean;
   dropIds: string[];
-  drops?: Array<{ drop: { id: string; title: string; slug: string } }>;
+  drops?: Array<{
+    discountCodeId: string;
+    dropId: string;
+    drop: { id: string; title: string; slug: string };
+  }>;
   _count?: { orders: number };
   createdAt: string;
   updatedAt: string;

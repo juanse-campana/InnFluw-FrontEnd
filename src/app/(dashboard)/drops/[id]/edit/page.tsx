@@ -17,7 +17,7 @@ import {
   Select,
 } from "@/components/ui";
 import { dropsApi } from "@/lib/api";
-import { useToastStore } from "@/lib/store";
+import { toast } from "sonner";
 import { ArrowLeft, Save, Eye, ExternalLink, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -53,7 +53,6 @@ export default function EditDropPage() {
   const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { addToast } = useToastStore();
   const dropId = params.id as string;
 
   const [formData, setFormData] = useState({
@@ -66,7 +65,7 @@ export default function EditDropPage() {
     status: "DRAFT" as Drop["status"],
     productImage: "",
     config: {
-      theme: { colors: { primary: "#6366f1" } },
+      theme: { colors: { primary: "#6366f1", secondary: "#8b5cf6" } },
       content: {
         headline: "",
         subheadline: "",
@@ -98,7 +97,10 @@ export default function EditDropPage() {
         productImage: d.productImage || "",
         config: {
           theme: {
-            colors: { primary: d.config?.theme?.colors?.primary || "#6366f1" },
+            colors: {
+              primary: d.config?.theme?.colors?.primary || "#6366f1",
+              secondary: d.config?.theme?.colors?.secondary || "#8b5cf6",
+            },
           },
           content: {
             headline: d.config?.content?.headline || "",
@@ -150,14 +152,12 @@ export default function EditDropPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["drop", dropId] });
       queryClient.invalidateQueries({ queryKey: ["drops"] });
-      addToast({ type: "success", title: "Drop actualizado correctamente" });
+      toast.success("Información del producto actualizada");
     },
     onError: (error: unknown) => {
       const err = error as { message?: string };
-      addToast({
-        type: "error",
-        title: "Error al actualizar",
-        message: err.message,
+      toast.error("Error al actualizar", {
+        description: err.message,
       });
     },
   });
@@ -394,17 +394,39 @@ export default function EditDropPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="primaryColor">Color primario</Label>
-                <Input
-                  id="primaryColor"
-                  type="color"
-                  className="h-10"
-                  value={formData.config.theme?.colors?.primary || "#6366f1"}
-                  onChange={(e) =>
-                    handleChange("config.theme.colors.primary", e.target.value)
-                  }
-                />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="primaryColor">Color primario</Label>
+                  <Input
+                    id="primaryColor"
+                    type="color"
+                    className="h-10"
+                    value={formData.config.theme?.colors?.primary || "#6366f1"}
+                    onChange={(e) =>
+                      handleChange(
+                        "config.theme.colors.primary",
+                        e.target.value,
+                      )
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="secondaryColor">Color secundario</Label>
+                  <Input
+                    id="secondaryColor"
+                    type="color"
+                    className="h-10"
+                    value={
+                      formData.config.theme?.colors?.secondary || "#8b5cf6"
+                    }
+                    onChange={(e) =>
+                      handleChange(
+                        "config.theme.colors.secondary",
+                        e.target.value,
+                      )
+                    }
+                  />
+                </div>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-3">
@@ -494,8 +516,17 @@ export default function EditDropPage() {
                 disabled={updateMutation.isPending}
                 onClick={() => updateMutation.mutate()}
               >
-                <Save className="mr-2 h-4 w-4" />
-                {updateMutation.isPending ? "Guardando..." : "Guardar cambios"}
+                {updateMutation.isPending ? (
+                  <>
+                    <Spinner className="mr-2 h-4 w-4" />
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Guardar cambios
+                  </>
+                )}
               </Button>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/drops">Cancelar</Link>

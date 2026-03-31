@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,13 +16,13 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  Select,
+  Spinner,
 } from "@/components/ui";
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 import type { Drop } from "@/types";
 
-const createCodeSchema = z.object({
+const updateCodeSchema = z.object({
   code: z.string().min(1, "Código requerido").max(50, "Máximo 50 caracteres"),
   type: z.enum(["PERCENTAGE", "FIXED_AMOUNT"]),
   value: z.number().min(0, "Valor debe ser mayor a 0"),
@@ -33,10 +33,12 @@ const createCodeSchema = z.object({
   dropIds: z.array(z.string()).min(1, "Selecciona al menos un drop"),
 });
 
-type CreateCodeForm = z.infer<typeof createCodeSchema>;
+type UpdateCodeForm = z.infer<typeof updateCodeSchema>;
 
-export default function NewDiscountCodePage() {
+export default function EditDiscountCodePage() {
   const router = useRouter();
+  const params = useParams();
+  const codeId = params.id as string;
   const [selectedDrops, setSelectedDrops] = useState<string[]>([]);
 
   const {
@@ -44,9 +46,10 @@ export default function NewDiscountCodePage() {
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
-  } = useForm<CreateCodeForm>({
-    resolver: zodResolver(createCodeSchema),
+  } = useForm<UpdateCodeForm>({
+    resolver: zodResolver(updateCodeSchema),
     defaultValues: {
       type: "PERCENTAGE",
       value: 10,
@@ -55,38 +58,75 @@ export default function NewDiscountCodePage() {
     },
   });
 
+  const { data: codeData, isLoading: isLoadingCode } = useQuery({
+    queryKey: ["discountCode", codeId],
+    queryFn: () => discountCodesApi.getById(codeId),
+    enabled: !!codeId,
+  });
+
   const { data: dropsData } = useQuery({
     queryKey: ["drops"],
     queryFn: () => dropsApi.getAll(),
   });
 
-  const createMutation = useMutation({
-    mutationFn: discountCodesApi.create,
+  // Effect to sync form with code data
+  useEffect(() => {
+    if (codeData?.data?.code) {
+      const code = codeData.data.code;
+      reset({
+        code: code.code,
+        type: code.type,
+        value: code.value,
+        minAmount: code.minAmount ?? "",
+        maxUses: code.maxUses ?? "",
+        expiresAt: code.expiresAt
+          ? new Date(code.expiresAt).toISOString().slice(0, 16)
+          : "",
+        isActive: code.isActive,
+        dropIds: code.dropIds || [],
+      });
+    }
+  }, [codeData, reset]);
+
+  // Effect to sync selectedDrops - SEPARADO para evitar race conditions
+  useEffect(() => {
+    if (codeData?.data?.code) {
+      // API returns drops as nested array: { drops: [{ dropId, drop: {...} }] }
+      // Extract just the dropId strings for the UI
+      const associatedDropIds =
+        codeData.data.code.drops?.map((d: { dropId: string }) => d.dropId) ||
+        [];
+      setSelectedDrops(associatedDropIds);
+      setValue("dropIds", associatedDropIds, { shouldValidate: true });
+    }
+  }, [codeData, setValue]);
+
+  const updateMutation = useMutation({
+    mutationFn: (data: Record<string, unknown>) =>
+      discountCodesApi.update(codeId, data),
     onSuccess: () => {
-      toast.success("Código creado exitosamente");
+      toast.success("Código actualizado exitosamente");
       router.push("/discount-codes");
     },
     onError: (error: unknown) => {
-      // Handle ApiError thrown by handleApiError
       if (error && typeof error === "object" && "message" in error) {
         const err = error as { message: string; code?: string };
-        toast.error("Error al crear código", {
+        toast.error("Error al actualizar código", {
           description: err.message,
         });
       } else if (error instanceof Error) {
-        toast.error("Error al crear código", {
+        toast.error("Error al actualizar código", {
           description: error.message,
         });
       } else {
-        toast.error("Error al crear código", {
+        toast.error("Error al actualizar código", {
           description: "Error desconocido",
         });
       }
     },
   });
 
-  const onSubmit = (data: CreateCodeForm) => {
-    // Build payload, excluding undefined/null/empty values for optional fields
+  const onSubmit = (data: UpdateCodeForm) => {
     const payload: Record<string, unknown> = {
       code: data.code.toUpperCase(),
       type: data.type,
@@ -95,7 +135,6 @@ export default function NewDiscountCodePage() {
       dropIds: selectedDrops,
     };
 
-    // Only include optional fields if they have valid values (not null, not NaN, not empty string)
     const minAmountValue =
       data.minAmount === "" ||
       data.minAmount === null ||
@@ -116,17 +155,14 @@ export default function NewDiscountCodePage() {
       payload.maxUses = maxUsesValue;
     }
 
-    // Only include expiresAt if it's a valid non-empty string
     if (data.expiresAt && data.expiresAt.trim() !== "") {
-      // Convert datetime-local format (YYYY-MM-DDTHH:mm) to ISO 8601 with seconds and Z suffix
-      // Input format: "2026-12-31T23:59" → Output: "2026-12-31T23:59:00.000Z"
       const isoDate = new Date(data.expiresAt);
       if (!isNaN(isoDate.getTime())) {
         payload.expiresAt = isoDate.toISOString();
       }
     }
 
-    createMutation.mutate(payload);
+    updateMutation.mutate(payload);
   };
 
   const toggleDrop = (dropId: string) => {
@@ -140,6 +176,22 @@ export default function NewDiscountCodePage() {
   const drops = dropsData?.data?.drops || [];
   const type = watch("type");
 
+  if (isLoadingCode) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
+  }
+
+  if (!codeData?.data?.code) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <p className="text-muted-foreground">Código no encontrado</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -150,10 +202,10 @@ export default function NewDiscountCodePage() {
         </Button>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Crear Código de Descuento
+            Editar Código de Descuento
           </h1>
           <p className="text-muted-foreground">
-            Crea un nuevo código de descuento
+            Actualiza los detalles del código de descuento
           </p>
         </div>
       </div>
@@ -309,10 +361,12 @@ export default function NewDiscountCodePage() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={createMutation.isPending}
+                  disabled={updateMutation.isPending}
                 >
                   <Save className="mr-2 h-4 w-4" />
-                  {createMutation.isPending ? "Creando..." : "Crear código"}
+                  {updateMutation.isPending
+                    ? "Guardando..."
+                    : "Guardar cambios"}
                 </Button>
                 <Button variant="outline" className="w-full" asChild>
                   <Link href="/discount-codes">Cancelar</Link>

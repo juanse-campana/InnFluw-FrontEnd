@@ -41,6 +41,7 @@ export default function NewDropPage() {
     price: 0,
     stock: 100,
     status: "DRAFT",
+    productImage: "",
     config: {
       theme: { colors: { primary: "#6366f1", secondary: "#8b5cf6" } },
       content: {
@@ -207,6 +208,15 @@ export default function NewDropPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="productImage">Product Photo URL</Label>
+                <Input
+                  id="productImage"
+                  value={formData.productImage}
+                  onChange={(e) => handleChange("productImage", e.target.value)}
+                  placeholder="https://..."
+                />
+              </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="price">Price (USD)</Label>

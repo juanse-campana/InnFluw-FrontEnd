@@ -284,8 +284,27 @@ export const discountCodesApi = {
   ): Promise<ApiResponse<{ code: DiscountCode }>> => {
     try {
       const response = await api.post("/discount-codes", data);
-      return response.data;
+      const responseData = response.data as ApiResponse<{ code: DiscountCode }>;
+
+      // Check if the API returned an error in the response body
+      if (responseData.success === false) {
+        const apiError: ApiError = {
+          code: responseData.error?.code || "API_ERROR",
+          message:
+            responseData.error?.message ||
+            responseData.message ||
+            "Error en la API",
+          errors: responseData.error?.errors,
+        };
+        throw apiError;
+      }
+
+      return responseData;
     } catch (error) {
+      // If it's already an ApiError (from our throw above), re-throw it
+      if (error && typeof error === "object" && "code" in error) {
+        throw error;
+      }
       return handleApiError(error);
     }
   },
