@@ -15,6 +15,8 @@ export interface AuthResponse {
   data?: {
     user?: Partial<User>;
     token?: string;
+    otpCode?: string;
+    verificationUrl?: string;
   };
 }
 

@@ -20,6 +20,7 @@ import type {
   HealthResponse,
   DiscountCodeValidation,
   Period,
+  AuthResponse,
 } from "@/types";
 
 const API_BASE_URL =
@@ -86,7 +87,7 @@ export const authApi = {
     email: string;
     password: string;
     name: string;
-  }): Promise<ApiResponse<{ user: Partial<User> }>> => {
+  }): Promise<AuthResponse> => {
     try {
       const response = await api.post("/auth/register", data);
       return response.data;
@@ -122,7 +123,7 @@ export const authApi = {
   login: async (data: {
     email: string;
     password: string;
-  }): Promise<ApiResponse<{ message: string }>> => {
+  }): Promise<AuthResponse> => {
     try {
       const response = await api.post("/auth/login", data);
       return response.data;
