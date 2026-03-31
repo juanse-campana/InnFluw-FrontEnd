@@ -19,13 +19,13 @@ import { useUIStore, useAuthStore } from "@/lib/store";
 import { Button } from "@/components/ui";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Panel", href: "/", icon: LayoutDashboard },
   { name: "Drops", href: "/drops", icon: Package },
-  { name: "Discount Codes", href: "/discount-codes", icon: Tags },
-  { name: "Orders", href: "/orders", icon: ShoppingCart },
-  { name: "Analytics", href: "/analytics", icon: BarChart3 },
+  { name: "Códigos de Descuento", href: "/discount-codes", icon: Tags },
+  { name: "Pedidos", href: "/orders", icon: ShoppingCart },
+  { name: "Análisis", href: "/analytics", icon: BarChart3 },
   { name: "Webhooks", href: "/webhooks", icon: Webhook },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Configuración", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -103,7 +103,7 @@ export function Sidebar() {
             </div>
             <div className="flex-1 overflow-hidden">
               <p className="truncate text-sm font-medium">
-                {user?.name || "User"}
+                {user?.name || "Usuario"}
               </p>
               <p className="truncate text-xs text-muted-foreground">
                 {user?.email}

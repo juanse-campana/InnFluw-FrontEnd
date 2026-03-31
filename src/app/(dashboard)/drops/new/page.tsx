@@ -22,12 +22,12 @@ import Link from "next/link";
 import { useState } from "react";
 
 const categories = [
-  { value: "electronics", label: "Electronics" },
-  { value: "clothing", label: "Clothing & Apparel" },
-  { value: "digital", label: "Digital Products" },
-  { value: "physical", label: "Physical Goods" },
-  { value: "courses", label: "Courses & Education" },
-  { value: "other", label: "Other" },
+  { value: "electronics", label: "Electrónicos" },
+  { value: "clothing", label: "Ropa y Accesorios" },
+  { value: "digital", label: "Productos Digitales" },
+  { value: "physical", label: "Productos Físicos" },
+  { value: "courses", label: "Cursos y Educación" },
+  { value: "other", label: "Otros" },
 ];
 
 export default function NewDropPage() {
@@ -84,14 +84,14 @@ export default function NewDropPage() {
         formData as unknown as Parameters<typeof dropsApi.create>[0],
       ),
     onSuccess: () => {
-      addToast({ type: "success", title: "Drop created successfully" });
+      addToast({ type: "success", title: "Drop creado exitosamente" });
       router.push("/drops");
     },
     onError: (error: unknown) => {
       const err = error as { message?: string };
       addToast({
         type: "error",
-        title: "Failed to create drop",
+        title: "Error al crear drop",
         message: err.message,
       });
     },
@@ -113,8 +113,8 @@ export default function NewDropPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Create New Drop</h1>
-          <p className="text-muted-foreground">Set up your new product drop</p>
+          <h1 className="text-3xl font-bold tracking-tight">Crear Nuevo Drop</h1>
+          <p className="text-muted-foreground">Configurá tu nuevo product drop</p>
         </div>
       </div>
 
@@ -122,14 +122,14 @@ export default function NewDropPage() {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle>Información Básica</CardTitle>
               <CardDescription>
-                Enter the basic details of your product
+                Ingresá los detalles básicos de tu producto
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Título</Label>
                 <Input
                   id="title"
                   value={formData.title}
@@ -139,7 +139,7 @@ export default function NewDropPage() {
                       handleChange("slug", generateSlug(e.target.value));
                     }
                   }}
-                  placeholder="My Awesome Product"
+                  placeholder="Mi Producto Increíble"
                 />
               </div>
 
@@ -153,30 +153,30 @@ export default function NewDropPage() {
                     onChange={(e) =>
                       handleChange("slug", generateSlug(e.target.value))
                     }
-                    placeholder="my-awesome-product"
+                    placeholder="mi-producto-increible"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Descripción</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => handleChange("description", e.target.value)}
-                  placeholder="Describe your product..."
+                  placeholder="Describí tu producto..."
                   rows={4}
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category">Categoría</Label>
                   <Select
                     value={formData.category}
                     onChange={(e) => handleChange("category", e.target.value)}
                   >
-                    <option value="">Select category</option>
+                    <option value="">Seleccionar categoría</option>
                     {categories.map((cat) => (
                       <option key={cat.value} value={cat.value}>
                         {cat.label}
@@ -186,14 +186,14 @@ export default function NewDropPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
+                  <Label htmlFor="status">Estado</Label>
                   <Select
                     value={formData.status}
                     onChange={(e) => handleChange("status", e.target.value)}
                   >
-                    <option value="DRAFT">Draft</option>
-                    <option value="LIVE">Live</option>
-                    <option value="PAUSED">Paused</option>
+                    <option value="DRAFT">Borrador</option>
+                    <option value="LIVE">En vivo</option>
+                    <option value="PAUSED">Pausado</option>
                   </Select>
                 </div>
               </div>
@@ -202,14 +202,14 @@ export default function NewDropPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Pricing & Inventory</CardTitle>
+              <CardTitle>Precio e Inventario</CardTitle>
               <CardDescription>
-                Set your product price and stock
+                Configurá el precio y stock de tu producto
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="productImage">Product Photo URL</Label>
+                <Label htmlFor="productImage">URL de Foto del Producto</Label>
                 <Input
                   id="productImage"
                   value={formData.productImage}
@@ -219,7 +219,7 @@ export default function NewDropPage() {
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Price (USD)</Label>
+                  <Label htmlFor="price">Precio (USD)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -250,52 +250,52 @@ export default function NewDropPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Content & Branding</CardTitle>
+              <CardTitle>Contenido y Marca</CardTitle>
               <CardDescription>
-                Customize your landing page content
+                Personalizá el contenido de tu landing page
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="headline">Headline</Label>
+                <Label htmlFor="headline">Titular</Label>
                 <Input
                   id="headline"
                   value={formData.config.content.headline}
                   onChange={(e) =>
                     handleChange("config.content.headline", e.target.value)
                   }
-                  placeholder="Your main headline"
+                  placeholder="Tu titular principal"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="subheadline">Subheadline</Label>
+                <Label htmlFor="subheadline">Subtitular</Label>
                 <Textarea
                   id="subheadline"
                   value={formData.config.content.subheadline}
                   onChange={(e) =>
                     handleChange("config.content.subheadline", e.target.value)
                   }
-                  placeholder="Supporting text"
+                  placeholder="Texto de apoyo"
                   rows={2}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="ctaText">Button Text</Label>
+                <Label htmlFor="ctaText">Texto del Botón</Label>
                 <Input
                   id="ctaText"
                   value={formData.config.content.ctaText}
                   onChange={(e) =>
                     handleChange("config.content.ctaText", e.target.value)
                   }
-                  placeholder="Buy Now"
+                  placeholder="Comprar ahora"
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="primaryColor">Primary Color</Label>
+                  <Label htmlFor="primaryColor">Color Primario</Label>
                   <Input
                     id="primaryColor"
                     type="color"
@@ -310,7 +310,7 @@ export default function NewDropPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="secondaryColor">Secondary Color</Label>
+                  <Label htmlFor="secondaryColor">Color Secundario</Label>
                   <Input
                     id="secondaryColor"
                     type="color"
@@ -332,12 +332,12 @@ export default function NewDropPage() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Preview</CardTitle>
+              <CardTitle>Vista Previa</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg border p-4">
                 <p className="font-medium">
-                  {formData.title || "Product Title"}
+                  {formData.title || "Título del Producto"}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   /drops/{formData.slug || "slug"}
@@ -346,7 +346,7 @@ export default function NewDropPage() {
                   variant={formData.status === "LIVE" ? "success" : "secondary"}
                   className="mt-2"
                 >
-                  {formData.status}
+                  {formData.status === "LIVE" ? "En vivo" : formData.status === "DRAFT" ? "Borrador" : formData.status}
                 </Badge>
               </div>
             </CardContent>
@@ -364,10 +364,10 @@ export default function NewDropPage() {
                 onClick={() => createMutation.mutate()}
               >
                 <Save className="mr-2 h-4 w-4" />
-                {createMutation.isPending ? "Creating..." : "Create Drop"}
+                {createMutation.isPending ? "Creando..." : "Crear Drop"}
               </Button>
               <Button variant="outline" className="w-full" asChild>
-                <Link href="/drops">Cancel</Link>
+                <Link href="/drops">Cancelar</Link>
               </Button>
             </CardContent>
           </Card>

@@ -38,8 +38,8 @@ export default function CheckoutPage() {
       <div className="min-h-screen flex items-center justify-center bg-muted/50">
         <Card className="max-w-md">
           <CardHeader>
-            <CardTitle>Invalid Checkout Link</CardTitle>
-            <CardDescription>This checkout link is invalid or expired.</CardDescription>
+            <CardTitle>Link de Checkout Inválido</CardTitle>
+            <CardDescription>Este link de checkout es inválido o expiró.</CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -67,13 +67,13 @@ export default function CheckoutPage() {
       });
 
       if (response.success) {
-        addToast({ type: "success", title: "Order placed!", message: "Check your email for confirmation." });
+        addToast({ type: "success", title: "¡Orden realizada!", message: "Revisá tu email para la confirmación." });
         router.push("/");
       } else {
-        setError(response.message || "Failed to place order");
+        setError(response.message || "Error al realizar el pedido");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || "An error occurred");
+      setError(err.response?.data?.message || "Ocurrió un error");
     } finally {
       setIsLoading(false);
     }
@@ -84,8 +84,8 @@ export default function CheckoutPage() {
       <div className="mx-auto max-w-2xl">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Checkout</CardTitle>
-            <CardDescription>Complete your purchase</CardDescription>
+            <CardTitle className="text-2xl">Finalizar Compra</CardTitle>
+            <CardDescription>Completá tu compra</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -109,55 +109,55 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="buyerName">Full Name *</Label>
+                  <Label htmlFor="buyerName">Nombre completo *</Label>
                   <Input
                     id="buyerName"
                     required
                     value={formData.buyerName}
                     onChange={(e) => handleChange("buyerName", e.target.value)}
-                    placeholder="John Doe"
+                    placeholder="Juan Pérez"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="buyerPhone">Phone</Label>
+                  <Label htmlFor="buyerPhone">Teléfono</Label>
                   <Input
                     id="buyerPhone"
                     type="tel"
                     value={formData.buyerPhone}
                     onChange={(e) => handleChange("buyerPhone", e.target.value)}
-                    placeholder="+1 234 567 8900"
+                    placeholder="+54 11 1234-5678"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="buyerAddress">Address</Label>
+                  <Label htmlFor="buyerAddress">Dirección</Label>
                   <Input
                     id="buyerAddress"
                     value={formData.buyerAddress}
                     onChange={(e) => handleChange("buyerAddress", e.target.value)}
-                    placeholder="123 Main St"
+                    placeholder="Av. Corrientes 1234"
                   />
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="buyerCity">City</Label>
+                    <Label htmlFor="buyerCity">Ciudad</Label>
                     <Input
                       id="buyerCity"
                       value={formData.buyerCity}
                       onChange={(e) => handleChange("buyerCity", e.target.value)}
-                      placeholder="New York"
+                      placeholder="Buenos Aires"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="buyerCountry">Country</Label>
+                    <Label htmlFor="buyerCountry">País</Label>
                     <Input
                       id="buyerCountry"
                       value={formData.buyerCountry}
                       onChange={(e) => handleChange("buyerCountry", e.target.value)}
-                      placeholder="United States"
+                      placeholder="Argentina"
                     />
                   </div>
                 </div>
@@ -165,11 +165,11 @@ export default function CheckoutPage() {
 
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? <Spinner className="h-4 w-4 mr-2" /> : null}
-                {isLoading ? "Processing..." : "Complete Purchase"}
+                {isLoading ? "Procesando..." : "Completar Compra"}
               </Button>
 
               <p className="text-center text-sm text-muted-foreground">
-                By completing this purchase you agree to our terms and conditions.
+                Al completar esta compra aceptás nuestros términos y condiciones.
               </p>
             </form>
           </CardContent>

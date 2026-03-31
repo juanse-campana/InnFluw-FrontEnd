@@ -24,8 +24,8 @@ import { useAuthStore } from "@/lib/store";
 import { useToastStore } from "@/lib/store";
 
 const verifySchema = z.object({
-  email: z.string().email("Invalid email address"),
-  code: z.string().length(6, "Code must be 6 digits"),
+  email: z.string().email("Dirección de email inválida"),
+  code: z.string().length(6, "El código debe tener 6 dígitos"),
 });
 
 type VerifyForm = z.infer<typeof verifySchema>;
@@ -78,15 +78,15 @@ function VerifyContent() {
         setAuth(response.data.user as User, response.data.token);
         addToast({
           type: "success",
-          title: "Email verified!",
-          message: "Welcome to InnFluw!",
+          title: "¡Email verificado!",
+          message: "¡Bienvenido a InnFluw!",
         });
         router.push("/dashboard");
       } else {
-        setError(response.message || "Verification failed");
+        setError(response.message || "La verificación falló");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid verification code");
+      setError(err.response?.data?.message || "Código de verificación inválido");
     } finally {
       setIsLoading(false);
     }
@@ -104,14 +104,14 @@ function VerifyContent() {
       });
       addToast({
         type: "success",
-        title: "Code sent!",
-        message: "Check your email for a new code.",
+        title: "¡Código enviado!",
+        message: "Revisa tu email para el nuevo código.",
       });
       setResendCooldown(60);
     } catch (err: any) {
       addToast({
         type: "error",
-        title: "Failed to resend",
+        title: "Error al reenviar",
         message: err.response?.data?.message,
       });
     } finally {
@@ -124,14 +124,14 @@ function VerifyContent() {
       <div className="flex min-h-screen items-center justify-center bg-muted/50 px-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle>Missing email</CardTitle>
+            <CardTitle>Email faltante</CardTitle>
             <CardDescription>
-              Please register first to verify your email.
+              Por favor registrate primero para verificar tu email.
             </CardDescription>
           </CardHeader>
           <CardFooter className="justify-center">
             <Button asChild>
-              <a href="/register">Go to Register</a>
+              <a href="/register">Ir a Registrarse</a>
             </Button>
           </CardFooter>
         </Card>
@@ -142,12 +142,12 @@ function VerifyContent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/50 px-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Verify your email</CardTitle>
-          <CardDescription>
-            Enter the 6-digit code sent to <strong>{emailParam}</strong>
-          </CardDescription>
-        </CardHeader>
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Verificá tu email</CardTitle>
+            <CardDescription>
+              Ingresá el código de 6 dígitos enviado a <strong>{emailParam}</strong>
+            </CardDescription>
+          </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             {error && (
@@ -182,14 +182,14 @@ function VerifyContent() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Spinner className="h-4 w-4 mr-2" /> Verifying...
+                  <Spinner className="h-4 w-4 mr-2" /> Verificando...
                 </>
               ) : (
-                "Verify Email"
+                "Verificar Email"
               )}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
-              Didn&apos;t receive a code?{" "}
+              ¿No recibiste el código?{" "}
               <button
                 type="button"
                 onClick={handleResend}
@@ -197,15 +197,15 @@ function VerifyContent() {
                 className="text-primary hover:underline disabled:text-muted-foreground disabled:no-underline"
               >
                 {isResending
-                  ? "Sending..."
+                  ? "Enviando..."
                   : resendCooldown > 0
-                    ? `Resend in ${resendCooldown}s`
-                    : "Resend code"}
+                    ? `Reenviar en ${resendCooldown}s`
+                    : "Reenviar código"}
               </button>
             </p>
             <p className="text-xs text-muted-foreground text-center">
               <a href="/register" className="hover:underline">
-                Use a different email
+                Usar un email diferente
               </a>
             </p>
           </CardFooter>

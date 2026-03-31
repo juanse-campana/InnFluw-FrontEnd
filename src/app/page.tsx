@@ -40,10 +40,10 @@ export default function HomePage() {
           </div>
           <nav className="flex items-center gap-4">
             <Button variant="ghost" asChild>
-              <Link href="/login">Sign In</Link>
+              <Link href="/login">Iniciar sesión</Link>
             </Button>
             <Button asChild>
-              <Link href="/register">Get Started</Link>
+              <Link href="/register">Registrarse</Link>
             </Button>
           </nav>
         </div>
@@ -53,20 +53,20 @@ export default function HomePage() {
         <section className="py-24 md:py-32">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-              Launch Products
+              Lanza Productos
               <br />
-              <span className="text-primary">In Seconds</span>
+              <span className="text-primary">En Segundos</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-              Create stunning landing pages for your product drops, manage
-              orders, and track analytics - all in one place.
+              Creá landing pages impresionantes para tus product drops, gestioná
+              pedidos y seguí tu analytics - todo en un solo lugar.
             </p>
             <div className="mt-10 flex items-center justify-center gap-4">
               <Button size="lg" asChild>
-                <Link href="/register">Start Free Trial</Link>
+                <Link href="/register">Comenzar Prueba Gratuita</Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="/login">View Demo</Link>
+                <Link href="/login">Ver Demo</Link>
               </Button>
             </div>
           </div>
@@ -91,10 +91,9 @@ export default function HomePage() {
                     />
                   </svg>
                 </div>
-                <h3 className="mt-4 text-lg font-semibold">Lightning Fast</h3>
+                <h3 className="mt-4 text-lg font-semibold">Ultra Rápido</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Create and launch product drops in seconds with our intuitive
-                  interface.
+                  Creá y lanzá product drops en segundos con nuestra interfaz intuitiva.
                 </p>
               </div>
 
@@ -115,10 +114,10 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="mt-4 text-lg font-semibold">
-                  Analytics Dashboard
+                  Panel de Análisis
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Track visitors, orders, and revenue with real-time analytics.
+                  Seguí visitantes, pedidos e ingresos con analytics en tiempo real.
                 </p>
               </div>
 
@@ -140,7 +139,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="mt-4 text-lg font-semibold">Webhooks</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Get notified instantly with webhook integrations.
+                  Recibí notificaciones al instante con integraciones de webhooks.
                 </p>
               </div>
             </div>
@@ -150,7 +149,7 @@ export default function HomePage() {
 
       <footer className="border-t py-8">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © 2026 InnFluw. All rights reserved.
+          © 2026 InnFluw. Todos los derechos reservados.
         </div>
       </footer>
     </div>

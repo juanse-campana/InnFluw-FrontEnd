@@ -51,7 +51,7 @@ export default function DashboardPage() {
 
   const stats = [
     {
-      title: "Total Drops",
+      title: "Drops Totales",
       value: summary.totalDrops,
       subtext: `${summary.activeDrops} activos`,
       icon: Package,

@@ -44,6 +44,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
+  const [verificationUrl, setVerificationUrl] = useState<string | null>(null);
 
   const {
     register: registerForm,
@@ -66,6 +67,7 @@ export default function RegisterPage() {
 
       if (response.success) {
         setRegisteredEmail(data.email);
+        setVerificationUrl(response.data?.verificationUrl || null);
         addToast({
           type: "success",
           title: "Cuenta creada",
@@ -116,6 +118,14 @@ export default function RegisterPage() {
                 verificación para activar tu cuenta.
               </AlertDescription>
             </Alert>
+            {verificationUrl && (
+              <div className="space-y-2">
+                <Label>Link de verificación (temporal):</Label>
+                <div className="rounded-md bg-muted p-3 break-all">
+                  <code className="text-xs">{verificationUrl}</code>
+                </div>
+              </div>
+            )}
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
             <Button

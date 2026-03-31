@@ -14,8 +14,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "InnFluw - Instant Drop SaaS",
-  description: "Create and manage product drops with ease",
+  title: "InnFluw - SaaS de Drops Instantáneos",
+  description: "Creá y gestioná product drops con facilidad",
 };
 
 export default function RootLayout({

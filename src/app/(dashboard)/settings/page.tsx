@@ -41,11 +41,11 @@ export default function SettingsPage() {
       if (response.data?.user) {
         setUser(response.data.user);
       }
-      addToast({ type: "success", title: "Profile updated successfully" });
+      addToast({ type: "success", title: "Perfil actualizado exitosamente" });
       setIsEditing(false);
     },
     onError: () => {
-      addToast({ type: "error", title: "Failed to update profile" });
+      addToast({ type: "error", title: "Error al actualizar el perfil" });
     },
   });
 
@@ -56,24 +56,24 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">Manage your account settings</p>
+        <h1 className="text-3xl font-bold tracking-tight">Configuración</h1>
+        <p className="text-muted-foreground">Gestioná la configuración de tu cuenta</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Profile</CardTitle>
-            <CardDescription>Update your personal information</CardDescription>
+            <CardTitle>Perfil</CardTitle>
+            <CardDescription>Actualizá tu información personal</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Nombre</Label>
                 <Input
                   id="name"
                   disabled={!isEditing}
-                  {...register("name", { required: "Name is required" })}
+                  {...register("name", { required: "El nombre es requerido" })}
                 />
                 {errors.name && (
                   <p className="text-sm text-destructive">
@@ -86,18 +86,18 @@ export default function SettingsPage() {
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" value={user?.email || ""} disabled />
                 <p className="text-xs text-muted-foreground">
-                  Email cannot be changed
+                  El email no se puede cambiar
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label>Status</Label>
+                <Label>Estado</Label>
                 <div className="flex items-center gap-2">
                   <span
                     className={`h-2 w-2 rounded-full ${user?.emailVerified ? "bg-green-500" : "bg-yellow-500"}`}
                   />
                   <span className="text-sm">
-                    {user?.emailVerified ? "Verified" : "Pending verification"}
+                    {user?.emailVerified ? "Verificado" : "Verificación pendiente"}
                   </span>
                 </div>
               </div>
@@ -109,18 +109,18 @@ export default function SettingsPage() {
                       {updateMutation.isPending ? (
                         <Spinner className="h-4 w-4 mr-2" />
                       ) : null}
-                      Save Changes
+                      Guardar cambios
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => setIsEditing(false)}
                     >
-                      Cancel
+                      Cancelar
                     </Button>
                   </>
                 ) : (
                   <Button type="button" onClick={() => setIsEditing(true)}>
-                    Edit Profile
+                    Editar perfil
                   </Button>
                 )}
               </div>
@@ -130,20 +130,20 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Account</CardTitle>
-            <CardDescription>Account information</CardDescription>
+            <CardTitle>Cuenta</CardTitle>
+            <CardDescription>Información de la cuenta</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm text-muted-foreground">Member since</p>
+              <p className="text-sm text-muted-foreground">Miembro desde</p>
               <p className="font-medium">
                 {user?.createdAt
-                  ? new Date(user.createdAt).toLocaleDateString()
+                  ? new Date(user.createdAt).toLocaleDateString("es-AR")
                   : "N/A"}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Account ID</p>
+              <p className="text-sm text-muted-foreground">ID de cuenta</p>
               <p className="font-medium font-mono text-sm">
                 {user?.id || "N/A"}
               </p>

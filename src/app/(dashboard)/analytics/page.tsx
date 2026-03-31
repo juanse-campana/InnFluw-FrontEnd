@@ -35,25 +35,25 @@ export default function AnalyticsPage() {
 
   const stats = [
     {
-      title: "Total Revenue",
+      title: "Ingresos Totales",
       value: formatCurrency(analytics?.data?.summary?.totalRevenue || 0),
       icon: DollarSign,
       color: "text-green-500",
     },
     {
-      title: "Total Orders",
+      title: "Pedidos Totales",
       value: analytics?.data?.summary?.totalOrders || 0,
       icon: ShoppingCart,
       color: "text-blue-500",
     },
     {
-      title: "Total Drops",
+      title: "Drops Totales",
       value: analytics?.data?.summary?.totalDrops || 0,
       icon: Package,
       color: "text-purple-500",
     },
     {
-      title: "Conversion Rate",
+      title: "Tasa de Conversión",
       value: `${((analytics?.data?.summary?.conversionRate || 0) * 100).toFixed(1)}%`,
       icon: TrendingUp,
       color: "text-orange-500",
@@ -63,8 +63,8 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-        <p className="text-muted-foreground">Track your store performance</p>
+        <h1 className="text-3xl font-bold tracking-tight">Análisis</h1>
+        <p className="text-muted-foreground">Seguimiento del rendimiento de tu tienda</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -86,7 +86,7 @@ export default function AnalyticsPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Top Performing Drops</CardTitle>
+            <CardTitle>Drops con Mejor Rendimiento</CardTitle>
           </CardHeader>
           <CardContent>
             {(analytics?.data?.topDrops?.length ?? 0) > 0 ? (
@@ -103,7 +103,7 @@ export default function AnalyticsPage() {
                       <div>
                         <p className="font-medium">{drop.title}</p>
                         <p className="text-sm text-muted-foreground">
-                          {drop.orders} orders
+                          {drop.orders} pedidos
                         </p>
                       </div>
                     </div>
@@ -115,7 +115,7 @@ export default function AnalyticsPage() {
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-8">
-                No data available
+                No hay datos disponibles
               </p>
             )}
           </CardContent>
@@ -123,7 +123,7 @@ export default function AnalyticsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>Actividad Reciente</CardTitle>
           </CardHeader>
           <CardContent>
             {(analytics?.data?.recentOrders?.length ?? 0) > 0 ? (
@@ -135,7 +135,7 @@ export default function AnalyticsPage() {
                   >
                     <div>
                       <p className="font-medium">{order.buyerName}</p>
-                      <p className="text-sm text-muted-foreground">New order</p>
+                      <p className="text-sm text-muted-foreground">Nuevo pedido</p>
                     </div>
                     <div className="text-right">
                       <p className="font-medium">
@@ -150,7 +150,7 @@ export default function AnalyticsPage() {
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-8">
-                No recent activity
+                No hay actividad reciente
               </p>
             )}
           </CardContent>
