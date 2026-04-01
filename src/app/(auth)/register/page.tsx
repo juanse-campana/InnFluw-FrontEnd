@@ -129,7 +129,9 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
             <Button
-              onClick={() => router.push(`/verify-email`)}
+              onClick={() =>
+                window.open(verificationUrl || "/verify-email", "_blank")
+              }
               className="w-full"
             >
               Ir a verificar email
